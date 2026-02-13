@@ -6,11 +6,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Food Scanner">
-    <meta name="theme-color" content="#001f3f">
-    <meta name="description" content="Scan and analyze your food nutritional information">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Capture and manage photos with Camera Application">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23001f3f' width='192' height='192'/><text x='50%' y='50%' font-size='100' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>🍽️</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23001f3f' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='90' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>🍽️</text></svg>">
+    <link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23667eea' width='192' height='192'/><text x='50%' y='50%' font-size='100' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>📸</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23667eea' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='90' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>📸</text></svg>">
     <title>Food Scanner</title>
     <style>
         * {
@@ -26,11 +26,13 @@
         html, body {
             width: 100%;
             height: 100%;
+            -webkit-user-scalable: no;
+            user-scalable: no;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #001f3f 0%, #003d7a 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             min-height: 100svh;
             display: flex;
@@ -60,7 +62,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #001f3f 0%, #003d7a 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px;
             text-align: center;
@@ -141,14 +143,14 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #001f3f 0%, #003d7a 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             grid-column: 1 / -1;
         }
 
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 31, 63, 0.4);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:active:not(:disabled) {
@@ -335,7 +337,7 @@
 
         .camera-select select:focus {
             outline: none;
-            border-color: #001f3f;
+            border-color: #667eea;
         }
 
         @media (max-width: 600px) {
@@ -382,34 +384,13 @@
                 padding-bottom: max(20px, env(safe-area-inset-bottom));
             }
         }
-
-        .photo-preview {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f5f5f5;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .photo-preview img {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .no-photo-text {
-            color: #999;
-            font-size: 14px;
-            padding: 40px 20px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🍽️ Food Scanner</h1>
-            <p>Scan and analyze your food</p>
+            <h1>📸 Camera Application</h1>
+            <p>Capture and manage photos</p>
         </div>
 
         <div class="content">
@@ -424,7 +405,7 @@
                 </div>
 
                 <div id="iosHint" style="display: none; font-size: 12px; color: #666; margin-bottom: 15px; padding: 10px; background: #f0f0f0; border-radius: 5px;">
-                    💡 On first use, tap "Scan Food" and allow camera access in the permission popup.
+                    💡 On first use, tap "Start Camera" and allow camera access in the permission popup.
                 </div>
 
                 <div id="videoContainer">
@@ -432,15 +413,17 @@
                 </div>
 
                 <div class="controls">
-                    <button class="btn-primary" id="captureBtn">Scan Food</button>
-                    <button class="btn-secondary" id="retakeBtn" disabled>Retake</button>
+                    <button class="btn-secondary" id="startBtn">Start Camera</button>
+                    <button class="btn-secondary" id="stopBtn" disabled>Stop Camera</button>
+                    <button class="btn-primary" id="captureBtn" disabled>📷 Capture Photo</button>
+                    <button class="btn-danger" id="clearGalleryBtn">Clear All Photos</button>
                 </div>
             </div>
 
             <div class="gallery-section">
-                <h2>Current Scan</h2>
-                <div class="photo-preview" id="photoPreview">
-                    <p class="no-photo-text">No scan captured yet. Tap 'Scan Food' to begin.</p>
+                <h2>Photo Gallery</h2>
+                <div class="gallery" id="gallery">
+                    <div class="empty-gallery">No photos captured yet. Start the camera and capture some!</div>
                 </div>
             </div>
         </div>
@@ -469,22 +452,25 @@
                 event.preventDefault();
             }
             lastTouchEnd = now;
+        }, false);
 
         // Camera Application
         class CameraApp {
             constructor() {
                 this.video = document.getElementById('video');
                 this.canvas = document.getElementById('canvas');
+                this.startBtn = document.getElementById('startBtn');
+                this.stopBtn = document.getElementById('stopBtn');
                 this.captureBtn = document.getElementById('captureBtn');
-                this.retakeBtn = document.getElementById('retakeBtn');
-                this.photoPreview = document.getElementById('photoPreview');
+                this.clearGalleryBtn = document.getElementById('clearGalleryBtn');
+                this.gallery = document.getElementById('gallery');
                 this.statusMessage = document.getElementById('statusMessage');
                 this.cameraSelect = document.getElementById('cameraSelect');
                 this.iosHint = document.getElementById('iosHint');
                 
                 this.stream = null;
                 this.devices = [];
-                this.currentPhoto = null;
+                this.photos = [];
                 this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
                 this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
                 this.permissionGranted = false;
@@ -495,40 +481,37 @@
                 }
                 
                 this.initializeEventListeners();
-                this.loadPhotoFromStorage();
+                this.loadPhotosFromStorage();
                 this.checkBrowserSupport();
                 
-                // Auto-load cameras on non-iOS devices
+                // Only load cameras on non-iOS devices initially
+                // On iOS, we'll load them after first permission is granted
                 if (!this.isIOS) {
                     this.loadAvailableCameras();
                 } else {
-                    this.cameraSelect.innerHTML = '<option value="">Tap "Scan Food" to initialize...</option>';
+                    // Show camera select as loading on iOS
+                    this.cameraSelect.innerHTML = '<option value="">Tap "Start Camera" to initialize...</option>';
                 }
             }
 
             checkBrowserSupport() {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                     this.showStatus('Your browser does not support camera access. Please use Chrome, Firefox, Safari, or Edge.', 'error');
+                    this.startBtn.disabled = true;
                     return false;
                 }
                 return true;
             }
 
             initializeEventListeners() {
-                this.captureBtn.addEventListener('click', async () => {
-                    if (!this.stream) {
-                        // Auto-start camera when capture is clicked
-                        await this.startCamera();
-                    } else {
-                        // Camera already running, capture the photo
-                        this.capturePhoto();
-                    }
-                });
-                this.retakeBtn.addEventListener('click', () => this.retakePhoto());
+                this.startBtn.addEventListener('click', () => this.startCamera());
+                this.stopBtn.addEventListener('click', () => this.stopCamera());
+                this.captureBtn.addEventListener('click', () => this.capturePhoto());
+                this.clearGalleryBtn.addEventListener('click', () => this.clearGallery());
                 this.cameraSelect.addEventListener('change', () => this.switchCamera());
 
                 // Add touchstart event for iOS button feedback
-                [this.captureBtn, this.retakeBtn].forEach(btn => {
+                [this.startBtn, this.stopBtn, this.captureBtn, this.clearGalleryBtn].forEach(btn => {
                     btn.addEventListener('touchstart', function() {
                         this.style.opacity = '0.7';
                     });
@@ -585,12 +568,6 @@
 
             async startCamera() {
                 try {
-                    // Stop any existing stream first
-                    if (this.stream) {
-                        this.stream.getTracks().forEach(track => track.stop());
-                        this.stream = null;
-                    }
-
                     // Check HTTPS requirement (relaxed for iOS web apps)
                     const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                     
@@ -652,7 +629,6 @@
                         }
 
                         stream = await navigator.mediaDevices.getUserMedia(constraints);
-                        this.permissionGranted = true;
                     }
 
                     this.stream = stream;
@@ -663,11 +639,12 @@
                         console.error('Play error:', error);
                     });
                     
+                    this.startBtn.disabled = true;
+                    this.stopBtn.disabled = false;
                     this.captureBtn.disabled = false;
-                    this.retakeBtn.disabled = true;
                     this.cameraSelect.disabled = true;
                     
-                    this.showStatus('✓ Camera ready to scan', 'success');
+                    this.showStatus('✓ Camera started successfully', 'success');
                 } catch (error) {
                     console.error('Error accessing camera:', error);
                     let errorMsg = 'Error accessing camera';
@@ -695,7 +672,14 @@
                     this.stream.getTracks().forEach(track => track.stop());
                     this.stream = null;
                 }
+
                 this.video.srcObject = null;
+                this.startBtn.disabled = false;
+                this.stopBtn.disabled = true;
+                this.captureBtn.disabled = true;
+                this.cameraSelect.disabled = false;
+                
+                this.showStatus('Camera stopped', 'success');
             }
 
             capturePhoto() {
@@ -719,82 +703,80 @@
                     context.drawImage(this.video, 0, 0);
                     const photoData = this.canvas.toDataURL('image/jpeg', 0.9);
                     
-                    // Save only one photo
-                    this.currentPhoto = {
+                    this.photos.unshift({
                         data: photoData,
                         timestamp: new Date().toLocaleString()
-                    };
+                    });
 
-                    this.savePhotoToStorage();
-                    this.displayPhoto();
-                    this.captureBtn.disabled = true;
-                    this.retakeBtn.disabled = false;
-                    this.showStatus('Food scanned successfully! Tap Retake to scan again.', 'success');
+                    this.savePhotosToStorage();
+                    this.renderGallery();
+                    this.showStatus('Photo captured successfully!', 'success');
                 } catch (error) {
                     console.error('Error capturing photo:', error);
                     this.showStatus('Error capturing photo: ' + error.message, 'error');
                 }
             }
 
-            retakePhoto() {
-                // Stop current stream
-                if (this.stream) {
-                    this.stream.getTracks().forEach(track => track.stop());
-                    this.stream = null;
-                }
-                this.video.srcObject = null;
-                
-                // Reset photo
-                this.currentPhoto = null;
-                this.savePhotoToStorage();
-                this.displayPhoto();
-                
-                // Reset button states to initial state
-                this.captureBtn.disabled = false;
-                this.retakeBtn.disabled = true;
-                this.cameraSelect.disabled = false;
-                
-                this.showStatus('Ready to scan again', 'success');
-            }
-
-            displayPhoto() {
-                if (!this.currentPhoto) {
-                    this.photoPreview.innerHTML = '<p class="no-photo-text">No scan captured yet. Tap \'Scan Food\' to begin.</p>';
+            renderGallery() {
+                if (this.photos.length === 0) {
+                    this.gallery.innerHTML = '<div class="empty-gallery">No photos captured yet. Start the camera and capture some!</div>';
                     return;
                 }
 
-                this.photoPreview.innerHTML = `
-                    <img src="${this.currentPhoto.data}" alt="Scanned food">
-                    <p style="margin-top: 10px; font-size: 12px; color: #666;">${this.currentPhoto.timestamp}</p>
-                `;
+                this.gallery.innerHTML = '';
+                
+                this.photos.forEach((photo, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.innerHTML = `
+                        <img src="${photo.data}" alt="Photo ${index + 1}">
+                        <button class="delete-btn" onclick="cameraApp.deletePhoto(${index})">×</button>
+                    `;
+                    this.gallery.appendChild(item);
+                });
             }
 
-            savePhotoToStorage() {
+            deletePhoto(index) {
+                this.photos.splice(index, 1);
+                this.savePhotosToStorage();
+                this.renderGallery();
+                this.showStatus('Photo deleted', 'success');
+            }
+
+            clearGallery() {
+                if (this.photos.length === 0) {
+                    this.showStatus('Gallery is already empty', 'error');
+                    return;
+                }
+
+                if (confirm('Are you sure you want to delete all photos?')) {
+                    this.photos = [];
+                    this.savePhotosToStorage();
+                    this.renderGallery();
+                    this.showStatus('All photos cleared', 'success');
+                }
+            }
+
+            savePhotosToStorage() {
                 try {
-                    if (this.currentPhoto) {
-                        localStorage.setItem('foodScanPhoto', JSON.stringify(this.currentPhoto));
-                    } else {
-                        localStorage.removeItem('foodScanPhoto');
-                    }
+                    localStorage.setItem('cameraPhotos', JSON.stringify(this.photos));
                 } catch (error) {
-                    console.error('Error saving photo:', error);
+                    console.error('Error saving photos:', error);
                     if (error.name === 'QuotaExceededError') {
                         this.showStatus('Storage quota exceeded', 'error');
                     }
                 }
             }
 
-            loadPhotoFromStorage() {
+            loadPhotosFromStorage() {
                 try {
-                    const stored = localStorage.getItem('foodScanPhoto');
+                    const stored = localStorage.getItem('cameraPhotos');
                     if (stored) {
-                        this.currentPhoto = JSON.parse(stored);
-                        this.displayPhoto();
-                        this.captureBtn.disabled = true;
-                        this.retakeBtn.disabled = false;
+                        this.photos = JSON.parse(stored);
+                        this.renderGallery();
                     }
                 } catch (error) {
-                    console.error('Error loading photo:', error);
+                    console.error('Error loading photos:', error);
                 }
             }
 
