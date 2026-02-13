@@ -509,7 +509,6 @@
             checkBrowserSupport() {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                     this.showStatus('Your browser does not support camera access. Please use Chrome, Firefox, Safari, or Edge.', 'error');
-                    this.startBtn.disabled = true;
                     return false;
                 }
                 return true;
@@ -586,6 +585,12 @@
 
             async startCamera() {
                 try {
+                    // Stop any existing stream first
+                    if (this.stream) {
+                        this.stream.getTracks().forEach(track => track.stop());
+                        this.stream = null;
+                    }
+
                     // Check HTTPS requirement (relaxed for iOS web apps)
                     const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                     
@@ -732,11 +737,23 @@
             }
 
             retakePhoto() {
+                // Stop current stream
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+                this.video.srcObject = null;
+                
+                // Reset photo
                 this.currentPhoto = null;
                 this.savePhotoToStorage();
                 this.displayPhoto();
+                
+                // Reset button states to initial state
                 this.captureBtn.disabled = false;
                 this.retakeBtn.disabled = true;
+                this.cameraSelect.disabled = false;
+                
                 this.showStatus('Ready to scan again', 'success');
             }
 
