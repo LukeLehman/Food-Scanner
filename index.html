@@ -26,8 +26,6 @@
         html, body {
             width: 100%;
             height: 100%;
-            -webkit-user-scalable: no;
-            user-scalable: no;
         }
 
         body {
@@ -686,21 +684,6 @@
                     this.showStatus('✗ ' + errorMsg, 'error');
                 }
             }
-                    } else if (error.name === 'NotFoundError') {
-                        errorMsg = 'No camera found on this device';
-                    } else if (error.name === 'NotReadableError') {
-                        errorMsg = 'Camera is already in use by another app';
-                    } else if (error.name === 'SecurityError') {
-                        errorMsg = 'Camera access is not allowed. Make sure you\'re using HTTPS.';
-                    } else if (error.name === 'TypeError') {
-                        errorMsg = 'Camera constraints not supported';
-                    } else if (error.name === 'OverconstrainedError') {
-                        errorMsg = 'Camera cannot meet the requested constraints';
-                    }
-                    
-                    this.showStatus('✗ ' + errorMsg, 'error');
-                }
-            }
 
             stopCamera() {
                 if (this.stream) {
@@ -795,14 +778,6 @@
                     }
                 } catch (error) {
                     console.error('Error loading photo:', error);
-                }
-            }
-                    localStorage.setItem('cameraPhotos', JSON.stringify(this.photos));
-                } catch (error) {
-                    console.error('Error saving photos:', error);
-                    if (error.name === 'QuotaExceededError') {
-                        this.showStatus('Storage quota exceeded', 'error');
-                    }
                 }
             }
 
