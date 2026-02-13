@@ -2,32 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Food Scanner">
+    <meta name="theme-color" content="#667eea">
+    <meta name="description" content="Capture and manage photos with Camera Application">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23667eea' width='192' height='192'/><text x='50%' y='50%' font-size='100' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>📸</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23667eea' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='90' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>📸</text></svg>">
+    <title>Food Scanner</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            -webkit-user-scalable: no;
+            user-scalable: no;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            min-height: 100svh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            padding: max(20px, env(safe-area-inset-bottom));
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
         }
 
         .container {
             width: 100%;
+            height: 100%;
             max-width: 800px;
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
@@ -35,6 +66,8 @@
             color: white;
             padding: 20px;
             text-align: center;
+            flex-shrink: 0;
+            padding-top: max(20px, env(safe-area-inset-top));
         }
 
         .header h1 {
@@ -43,7 +76,10 @@
         }
 
         .content {
-            padding: 30px;
+            padding: 30px 20px;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .camera-section {
@@ -58,6 +94,8 @@
             border-radius: 10px;
             overflow: hidden;
             aspect-ratio: 16 / 9;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         video {
@@ -65,6 +103,9 @@
             height: 100%;
             display: block;
             object-fit: cover;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
         #canvas {
@@ -88,6 +129,17 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-user-select: none;
+            user-select: none;
+            min-height: 44px;
+            -webkit-flex-grow: 0;
+            flex-grow: 0;
+        }
+
+        button:active:not(:disabled) {
+            opacity: 0.9;
         }
 
         .btn-primary {
@@ -147,6 +199,8 @@
             margin-bottom: 15px;
             color: #333;
             font-size: 20px;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .gallery {
@@ -164,6 +218,12 @@
             aspect-ratio: 1;
             cursor: pointer;
             transition: transform 0.3s ease;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .gallery-item:active {
+            transform: scale(0.95);
         }
 
         .gallery-item:hover {
@@ -174,6 +234,9 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
         .delete-btn {
@@ -193,8 +256,15 @@
             justify-content: center;
             opacity: 0;
             transition: opacity 0.3s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            padding: 0;
+            min-height: auto;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
+        .gallery-item:active .delete-btn,
         .gallery-item:hover .delete-btn {
             opacity: 1;
         }
@@ -205,6 +275,8 @@
             padding: 40px 20px;
             background: #f9f9f9;
             border-radius: 8px;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .camera-status {
@@ -213,6 +285,8 @@
             border-radius: 8px;
             font-size: 14px;
             display: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .status-success {
@@ -238,6 +312,8 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: #333;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .camera-select select {
@@ -245,9 +321,18 @@
             padding: 10px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
             transition: border-color 0.3s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1.5em;
+            padding-right: 2.5rem;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .camera-select select:focus {
@@ -271,6 +356,33 @@
             .gallery {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
+
+            .content {
+                padding: 20px;
+            }
+
+            body {
+                padding: 0;
+                padding-bottom: max(0px, env(safe-area-inset-bottom));
+            }
+
+            .container {
+                border-radius: 20px 20px 0 0;
+                max-width: 100%;
+            }
+
+            .header {
+                border-radius: 20px 20px 0 0;
+            }
+        }
+
+        @supports (padding: max(0px)) {
+            body {
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+                padding-top: max(20px, env(safe-area-inset-top));
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+            }
         }
     </style>
 </head>
@@ -292,8 +404,12 @@
                     </select>
                 </div>
 
+                <div id="iosHint" style="display: none; font-size: 12px; color: #666; margin-bottom: 15px; padding: 10px; background: #f0f0f0; border-radius: 5px;">
+                    💡 On first use, tap "Start Camera" and allow camera access in the permission popup.
+                </div>
+
                 <div id="videoContainer">
-                    <video id="video" autoplay playsinline></video>
+                    <video id="video" autoplay playsinline muted webkit-playsinline></video>
                 </div>
 
                 <div class="controls">
@@ -316,6 +432,28 @@
     <canvas id="canvas"></canvas>
 
     <script>
+        // Register Service Worker for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
+        }
+
+        // Prevent zoom on iPhone
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+
+        // Prevent double-tap zoom
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            let now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
         // Camera Application
         class CameraApp {
             constructor() {
@@ -328,18 +466,32 @@
                 this.gallery = document.getElementById('gallery');
                 this.statusMessage = document.getElementById('statusMessage');
                 this.cameraSelect = document.getElementById('cameraSelect');
+                this.iosHint = document.getElementById('iosHint');
                 
                 this.stream = null;
                 this.devices = [];
                 this.photos = [];
+                this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                this.permissionGranted = false;
+                
+                // Show iOS hint if on iOS
+                if (this.isIOS && this.iosHint) {
+                    this.iosHint.style.display = 'block';
+                }
                 
                 this.initializeEventListeners();
                 this.loadPhotosFromStorage();
                 this.checkBrowserSupport();
-                this.loadAvailableCameras();
                 
-                // Request permissions on page load
-                this.requestInitialPermissions();
+                // Only load cameras on non-iOS devices initially
+                // On iOS, we'll load them after first permission is granted
+                if (!this.isIOS) {
+                    this.loadAvailableCameras();
+                } else {
+                    // Show camera select as loading on iOS
+                    this.cameraSelect.innerHTML = '<option value="">Tap "Start Camera" to initialize...</option>';
+                }
             }
 
             checkBrowserSupport() {
@@ -351,56 +503,48 @@
                 return true;
             }
 
-            async requestInitialPermissions() {
-                try {
-                    // Check if we're on HTTPS or localhost
-                    const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                    
-                    if (!isSecure) {
-                        this.showStatus('⚠️ Camera access requires HTTPS. Please serve this file over HTTPS.', 'error');
-                        return;
-                    }
-
-                    // Request permissions for camera
-                    const stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: true, 
-                        audio: false 
-                    });
-
-                    // Stop the stream immediately - we just wanted to request permission
-                    stream.getTracks().forEach(track => track.stop());
-                    
-                    this.showStatus('✓ Camera permission granted!', 'success');
-                } catch (error) {
-                    if (error.name === 'NotAllowedError') {
-                        this.showStatus('⚠️ Camera permission denied. Click "Start Camera" to enable it.', 'error');
-                    } else if (error.name === 'NotFoundError') {
-                        this.showStatus('⚠️ No camera found on this device.', 'error');
-                        this.startBtn.disabled = true;
-                    } else {
-                        console.warn('Initial permission request note:', error);
-                    }
-                }
-            }
-
             initializeEventListeners() {
                 this.startBtn.addEventListener('click', () => this.startCamera());
                 this.stopBtn.addEventListener('click', () => this.stopCamera());
                 this.captureBtn.addEventListener('click', () => this.capturePhoto());
                 this.clearGalleryBtn.addEventListener('click', () => this.clearGallery());
                 this.cameraSelect.addEventListener('change', () => this.switchCamera());
+
+                // Add touchstart event for iOS button feedback
+                [this.startBtn, this.stopBtn, this.captureBtn, this.clearGalleryBtn].forEach(btn => {
+                    btn.addEventListener('touchstart', function() {
+                        this.style.opacity = '0.7';
+                    });
+                    btn.addEventListener('touchend', function() {
+                        this.style.opacity = '1';
+                    });
+                });
             }
 
             async loadAvailableCameras() {
                 try {
-                    const devices = await navigator.mediaDevices.enumerateDevices();
-                    this.devices = devices.filter(device => device.kind === 'videoinput');
+                    // On iOS, sometimes we need to wait a bit for devices to appear
+                    let retries = 0;
+                    let devices = [];
                     
+                    while (devices.length === 0 && retries < 3) {
+                        devices = await navigator.mediaDevices.enumerateDevices();
+                        devices = devices.filter(device => device.kind === 'videoinput');
+                        
+                        if (devices.length === 0 && this.isIOS && retries < 2) {
+                            // Wait a bit before retrying on iOS
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            retries++;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    this.devices = devices;
                     this.cameraSelect.innerHTML = '';
                     
                     if (this.devices.length === 0) {
-                        this.showStatus('No cameras found', 'error');
-                        this.cameraSelect.innerHTML = '<option value="">No cameras available</option>';
+                        this.cameraSelect.innerHTML = '<option value="">Default Camera</option>';
                         return;
                     }
 
@@ -414,39 +558,86 @@
                     if (this.devices.length > 0) {
                         this.cameraSelect.value = this.devices[0].deviceId;
                     }
+                    
+                    console.log(`Found ${this.devices.length} camera(s)`);
                 } catch (error) {
                     console.error('Error loading cameras:', error);
-                    this.showStatus('Error loading cameras', 'error');
+                    this.cameraSelect.innerHTML = '<option value="">Default Camera</option>';
                 }
             }
 
             async startCamera() {
                 try {
-                    // Check HTTPS requirement
+                    // Check HTTPS requirement (relaxed for iOS web apps)
                     const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                     
-                    if (!isSecure) {
+                    if (!isSecure && !this.isIOS && !this.isSafari) {
                         this.showStatus('Camera access requires HTTPS. Please serve this file over HTTPS or localhost.', 'error');
                         return;
                     }
 
-                    const deviceId = this.cameraSelect.value;
-                    if (!deviceId) {
-                        this.showStatus('Please select a camera', 'error');
-                        return;
+                    let stream = null;
+
+                    // iOS Safari: Use extremely simple constraints first
+                    if (this.isIOS) {
+                        try {
+                            // First attempt: just request video, no constraints
+                            stream = await navigator.mediaDevices.getUserMedia({ 
+                                video: true,
+                                audio: false 
+                            });
+                            
+                            // Success! Now we can load cameras
+                            this.permissionGranted = true;
+                            
+                            // Load cameras now that permission is granted
+                            if (this.devices.length === 0) {
+                                await this.loadAvailableCameras();
+                            }
+                        } catch (firstError) {
+                            console.error('iOS first attempt failed:', firstError);
+                            
+                            // Try with facing mode
+                            try {
+                                stream = await navigator.mediaDevices.getUserMedia({ 
+                                    video: { facingMode: 'environment' },
+                                    audio: false 
+                                });
+                                this.permissionGranted = true;
+                                if (this.devices.length === 0) {
+                                    await this.loadAvailableCameras();
+                                }
+                            } catch (secondError) {
+                                throw secondError;
+                            }
+                        }
+                    } else {
+                        // Desktop/Android: Use optimized constraints
+                        const constraints = {
+                            video: {
+                                width: { ideal: 1280 },
+                                height: { ideal: 720 },
+                                facingMode: 'environment'
+                            },
+                            audio: false
+                        };
+
+                        // Add deviceId if available and selected
+                        const deviceId = this.cameraSelect.value;
+                        if (deviceId) {
+                            constraints.video.deviceId = { exact: deviceId };
+                        }
+
+                        stream = await navigator.mediaDevices.getUserMedia(constraints);
                     }
 
-                    const constraints = {
-                        video: {
-                            deviceId: { exact: deviceId },
-                            width: { ideal: 1280 },
-                            height: { ideal: 720 }
-                        },
-                        audio: false
-                    };
-
-                    this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-                    this.video.srcObject = this.stream;
+                    this.stream = stream;
+                    this.video.srcObject = stream;
+                    
+                    // Ensure video plays
+                    await this.video.play().catch(error => {
+                        console.error('Play error:', error);
+                    });
                     
                     this.startBtn.disabled = true;
                     this.stopBtn.disabled = false;
@@ -459,15 +650,17 @@
                     let errorMsg = 'Error accessing camera';
                     
                     if (error.name === 'NotAllowedError') {
-                        errorMsg = 'Camera permission denied. Please allow camera access and try again.';
+                        errorMsg = 'Camera permission denied. Please allow camera access in Settings > Safari and try again.';
                     } else if (error.name === 'NotFoundError') {
                         errorMsg = 'No camera found on this device';
                     } else if (error.name === 'NotReadableError') {
-                        errorMsg = 'Camera is already in use by another application';
+                        errorMsg = 'Camera is already in use by another app';
                     } else if (error.name === 'SecurityError') {
-                        errorMsg = 'Camera access is not allowed (requires HTTPS or localhost)';
+                        errorMsg = 'Camera access is not allowed. Make sure you\'re using HTTPS.';
                     } else if (error.name === 'TypeError') {
-                        errorMsg = 'Invalid camera constraints - please check your browser compatibility';
+                        errorMsg = 'Camera constraints not supported';
+                    } else if (error.name === 'OverconstrainedError') {
+                        errorMsg = 'Camera cannot meet the requested constraints';
                     }
                     
                     this.showStatus('✗ ' + errorMsg, 'error');
@@ -495,21 +688,33 @@
                     return;
                 }
 
-                const context = this.canvas.getContext('2d');
-                this.canvas.width = this.video.videoWidth;
-                this.canvas.height = this.video.videoHeight;
-                
-                context.drawImage(this.video, 0, 0);
-                const photoData = this.canvas.toDataURL('image/jpeg', 0.9);
-                
-                this.photos.unshift({
-                    data: photoData,
-                    timestamp: new Date().toLocaleString()
-                });
+                try {
+                    const context = this.canvas.getContext('2d');
+                    
+                    // Ensure video dimensions are available
+                    if (this.video.videoWidth === 0 || this.video.videoHeight === 0) {
+                        this.showStatus('Video stream not ready. Wait a moment and try again.', 'error');
+                        return;
+                    }
+                    
+                    this.canvas.width = this.video.videoWidth;
+                    this.canvas.height = this.video.videoHeight;
+                    
+                    context.drawImage(this.video, 0, 0);
+                    const photoData = this.canvas.toDataURL('image/jpeg', 0.9);
+                    
+                    this.photos.unshift({
+                        data: photoData,
+                        timestamp: new Date().toLocaleString()
+                    });
 
-                this.savePhotosToStorage();
-                this.renderGallery();
-                this.showStatus('Photo captured successfully!', 'success');
+                    this.savePhotosToStorage();
+                    this.renderGallery();
+                    this.showStatus('Photo captured successfully!', 'success');
+                } catch (error) {
+                    console.error('Error capturing photo:', error);
+                    this.showStatus('Error capturing photo: ' + error.message, 'error');
+                }
             }
 
             renderGallery() {
